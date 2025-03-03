@@ -1,4 +1,4 @@
-package com.numpyninja.lms;
+package com.indu.lms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

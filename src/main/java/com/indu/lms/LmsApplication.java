@@ -1,4 +1,4 @@
-package com.numpyninja.lms;
+package com.indu.lms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
