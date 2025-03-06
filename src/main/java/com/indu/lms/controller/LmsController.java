@@ -94,9 +94,14 @@ public class LmsController {
 		 batchRep.deleteById(id);
 	 }
 	 
-	 @GetMapping("/byProgram1/{prgId}")
-	    public List<TblLmsBatchMdl> getBatchByPrg1(@PathVariable int prgId) {
-	        return batchRep.findBatchByProgramId(prgId);
+	 @GetMapping("/batches/withProgName")
+	    public List<TblLmsBatchMdl> getBatchWithProgName() {
+	        return batchRep.findAllBatchWithProgramName();
+	    }
+	 
+	 @GetMapping("/batches/withProgName/{prgId}")
+	    public List<TblLmsBatchMdl> getBatchWithProgNameByProgId(@PathVariable int prgId) {
+	        return batchRep.findBatchWithProgNameByProgId(prgId);
 	    }
 	 
 	 @GetMapping("/byProgram/{prgId}")
