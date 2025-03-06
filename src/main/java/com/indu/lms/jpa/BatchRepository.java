@@ -11,6 +11,6 @@ import com.indu.lms.entity.TblLmsBatch;
 
 @Repository
 public interface BatchRepository extends JpaRepository<TblLmsBatch, Integer> {
-//	@Query("SELECT b FROM TblLmsBatch b WHERE b.batch_program_id = :programId")
-//	List<TblLmsBatch> findBatchByPrg(@Param("programId") Long programId);
+	@Query("SELECT b FROM TblLmsBatch b WHERE b.program.id = :programId")
+	List<TblLmsBatch> findBatchByPrg(@Param("programId") int programId);
 }
