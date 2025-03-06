@@ -3,15 +3,12 @@ package com.indu.lms.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,6 +25,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Table(name="tbl_lms_batch")
 public class TblLmsBatch {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
@@ -37,11 +35,9 @@ public class TblLmsBatch {
 	private String batch_description;
 	private String batch_status;
 	
-	 @ManyToOne
-	 @JoinColumn(name = "batch_program_id")  // Creates Foreign Key in Student Table
-	 private TblLmsProgram program;
+	
 	 
-	//private int batch_program_id;
+	private int batch_program_id;
 	private int batch_no_of_classes;
 	@UpdateTimestamp
 	@Column(name = "creation_time", updatable = false)

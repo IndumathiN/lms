@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.indu.lms.entity.TblLmsBatch;
+import com.indu.lms.model.TblLmsBatchMdl;
 
 @Repository
 public interface BatchRepository extends JpaRepository<TblLmsBatch, Integer> {
-	@Query("SELECT b FROM TblLmsBatch b WHERE b.program.id = :programId")
-	List<TblLmsBatch> findBatchByPrg(@Param("programId") int programId);
+	@Query(value = "SELECT b.batch_name, b.batch_no_of_classes, p.program_name, b.batch_id FROM tbl_lms_program p inner join tbl_lms_batch b on b.batch_program_id = p.program_id where p.program_id = :programId", nativeQuery = true)
+	List<TblLmsBatchMdl> findBatchByProgramId(@Param("programId") int programId);
 }

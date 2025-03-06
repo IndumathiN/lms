@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.indu.lms.entity.TblLmsBatch;
+import com.indu.lms.entity.TblLmsBatchInfo;
 import com.indu.lms.entity.TblLmsProgram;
+import com.indu.lms.entity.TblLmsProgramInfo;
+import com.indu.lms.jpa.BatchInfoRepository;
 import com.indu.lms.jpa.BatchRepository;
+import com.indu.lms.jpa.ProgramInfoRepository;
 import com.indu.lms.jpa.ProgramRepository;
+import com.indu.lms.model.TblLmsBatchMdl;
 
 @RestController
 @RequestMapping("/")
@@ -26,12 +31,23 @@ public class LmsController {
 	BatchRepository batchRep;
 	
 	@Autowired
+	BatchInfoRepository batchInfoRep;
+	
+	@Autowired
 	ProgramRepository programRep;
+	
+	@Autowired
+	ProgramInfoRepository programInfoRep;
 	
 	 @GetMapping("/programs")
 	 List<TblLmsProgram> all(){
 	 return programRep.findAll(); 
 	 }
+	 @GetMapping("/programInfos")
+	 List<TblLmsProgramInfo> allInfo(){
+	 return programInfoRep.findAll(); 
+	 }
+	 
 	 @GetMapping("/programs/{id}")
 	 Optional <TblLmsProgram> findProgram(@PathVariable int id){
 	 return programRep.findById(id);
@@ -78,8 +94,13 @@ public class LmsController {
 		 batchRep.deleteById(id);
 	 }
 	 
+	 @GetMapping("/byProgram1/{prgId}")
+	    public List<TblLmsBatchMdl> getBatchByPrg1(@PathVariable int prgId) {
+	        return batchRep.findBatchByProgramId(prgId);
+	    }
+	 
 	 @GetMapping("/byProgram/{prgId}")
-	    public List<TblLmsBatch> getBatchByPrg(@PathVariable int prgId) {
-	        return batchRep.findBatchByPrg(prgId);
+	    public List<TblLmsBatchInfo> getBatchByPrg(@PathVariable int prgId) {
+	        return batchInfoRep.findBatchByPrg(prgId);
 	    }
 }

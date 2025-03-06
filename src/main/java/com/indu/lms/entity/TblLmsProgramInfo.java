@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Table(name="tbl_lms_program")
-public class TblLmsProgram {
+public class TblLmsProgramInfo {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
 	
@@ -45,5 +46,7 @@ public class TblLmsProgram {
 	@UpdateTimestamp
 	private LocalDateTime last_mod_time;
 	
-	
+	 @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	    private List<TblLmsBatchInfo> batchList;
+	 
 }
