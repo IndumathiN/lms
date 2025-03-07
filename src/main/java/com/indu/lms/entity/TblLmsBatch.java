@@ -38,7 +38,7 @@ public class TblLmsBatch {
 	private String batch_status;
 	
 	
-	@NotBlank (message = "Program Id is mandatory") 
+	@NotNull (message = "Program Id is mandatory") 
 	private int batch_program_id;
 	@NotNull(message = "Classes cannot be null")
 	private int batch_no_of_classes;
