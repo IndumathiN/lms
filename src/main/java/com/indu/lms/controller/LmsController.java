@@ -83,9 +83,28 @@ public class LmsController {
 	 Optional <TblLmsBatch> findBatch(@PathVariable int id){
 	 return batchRep.findById(id);
 	 }
-	@PostMapping("/batch")
+	
+	 @PostMapping("/batch")
 	public ResponseEntity<String> createBatch (@Valid @RequestBody TblLmsBatch newBatch) {
+		
+		Optional<TblLmsProgram> program = programRep.findById(newBatch.getBatch_program_id());
+		if (!program.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
+        }
 		batchRep.save(newBatch);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
+		 }
+	
+	 @PostMapping("/batchInfo")
+	public ResponseEntity<String> createBatchInfo (@Valid @RequestBody TblLmsBatchInfo newBatch) {
+		
+		Optional<TblLmsProgram> program = programRep.findById(newBatch.getProgram().getProgram_id());
+
+        if (!program.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
+        }
+        newBatch.setProgram(program.get());
+		batchInfoRep.save(newBatch);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
 		 }
 //	TblLmsBatch createBatch (@RequestBody TblLmsBatch newPrg) {

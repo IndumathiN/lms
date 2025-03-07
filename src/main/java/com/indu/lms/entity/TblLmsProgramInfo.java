@@ -33,7 +33,6 @@ import lombok.ToString;
 public class TblLmsProgramInfo {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
-	
 	private int program_id;
 	@NotBlank (message = "Program Name is mandatory")
 	private String program_name;
@@ -47,6 +46,6 @@ public class TblLmsProgramInfo {
 	private LocalDateTime last_mod_time;
 	
 	 @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	    private List<TblLmsBatchInfo> batchList;
+	 private List<TblLmsBatchInfo> batchList;
 	 
 }

@@ -14,9 +14,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.indu.lms.validator.ProgramExists;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,10 +42,13 @@ public class TblLmsBatchInfo {
 	@NotBlank (message = "Batch Name is mandatory")
 	private String batch_name;
 	private String batch_description;
+	@NotBlank (message = "Batch Status is mandatory")
 	private String batch_status;
 	
 	 @ManyToOne
 	 @JoinColumn(name = "batch_program_id")  // Creates Foreign Key in Student Table
+	 @NotNull (message = "Program Id is mandatory") 
+	//@ProgramExists(message = "Program not available in DB")
 	 private TblLmsProgram program;
 	 
 	

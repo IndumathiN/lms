@@ -8,11 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.indu.lms.validator.ProgramExists;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,9 +41,10 @@ public class TblLmsBatch {
 	@NotBlank (message = "Status is mandatory") 
 	private String batch_status;
 	
-	
+	 
 	@NotNull (message = "Program Id is mandatory") 
-	private int batch_program_id;
+	private Integer batch_program_id;
+	
 	@NotNull(message = "Classes cannot be null")
 	private int batch_no_of_classes;
 	@UpdateTimestamp
