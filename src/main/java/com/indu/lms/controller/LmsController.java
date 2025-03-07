@@ -17,6 +17,7 @@ import com.indu.lms.entity.TblLmsBatch;
 import com.indu.lms.entity.TblLmsBatchInfo;
 import com.indu.lms.entity.TblLmsProgram;
 import com.indu.lms.entity.TblLmsProgramInfo;
+import com.indu.lms.exception.ResourceNotFoundException;
 import com.indu.lms.jpa.BatchInfoRepository;
 import com.indu.lms.jpa.BatchRepository;
 import com.indu.lms.jpa.ProgramInfoRepository;
@@ -95,17 +96,38 @@ public class LmsController {
 	 }
 	 
 	 @GetMapping("/batches/withProgName")
-	    public List<TblLmsBatchMdl> getBatchWithProgName() {
-	        return batchRep.findAllBatchWithProgramName();
+	    public Optional<List<TblLmsBatchMdl>> getBatchWithProgName() {
+	        //return batchRep.findAllBatchWithProgramName();
+	        Optional<List<TblLmsBatchMdl>> output =batchRep.findAllBatchWithProgramName();
+			 if (output.isPresent() && !output.get().isEmpty()) {
+				 return output;   
+			 }
+			 else {
+				 throw new ResourceNotFoundException("No Batch found");
+			 }
 	    }
 	 
 	 @GetMapping("/batches/withProgName/{prgId}")
-	    public List<TblLmsBatchMdl> getBatchWithProgNameByProgId(@PathVariable int prgId) {
-	        return batchRep.findBatchWithProgNameByProgId(prgId);
-	    }
+	    public Optional<List<TblLmsBatchMdl>> getBatchWithProgNameByProgId(@PathVariable int prgId) {
+	        //return batchRep.findBatchWithProgNameByProgId(prgId).orElseThrow(() -> new RuntimeException("Student with ID " + prgId + " not found"));
+		 Optional<List<TblLmsBatchMdl>> output =batchRep.findBatchWithProgNameByProgId(prgId);
+		 if (output.isPresent() && !output.get().isEmpty()) {
+			 return output;   
+		 }
+		 else {
+			 throw new ResourceNotFoundException("No Batch found for Program ID: " + prgId);
+		 }
+		
+	 }
 	 
 	 @GetMapping("/byProgram/{prgId}")
-	    public List<TblLmsBatchInfo> getBatchByPrg(@PathVariable int prgId) {
-	        return batchInfoRep.findBatchByPrg(prgId);
+	    public Optional<List<TblLmsBatchInfo>> getBatchByPrg(@PathVariable int prgId) {
+		 Optional<List<TblLmsBatchInfo>> output = batchInfoRep.findBatchByPrg(prgId);
+		 if (output.isPresent() && !output.get().isEmpty()) {
+			 return output;   
+		 }
+		 else {
+			 throw new ResourceNotFoundException("No Batch found for Program ID: " + prgId);
+		 }
 	    }
 }
