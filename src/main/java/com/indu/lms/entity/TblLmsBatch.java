@@ -33,12 +33,13 @@ import lombok.ToString;
 @Table(name="tbl_lms_batch")
 public class TblLmsBatch {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
+	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private int batch_id;
 	@NotBlank (message = "Batch Name is mandatory")
 	private String batch_name;
 	private String batch_description;
-	@NotBlank (message = "Status is mandatory") 
+	//@NotBlank (message = "Status is mandatory") 
+	@Column(nullable = false)
 	private String batch_status;
 	
 	 

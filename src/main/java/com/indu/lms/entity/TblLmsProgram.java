@@ -31,10 +31,11 @@ import lombok.ToString;
 @Table(name="tbl_lms_program")
 public class TblLmsProgram {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
+	@GeneratedValue (strategy = GenerationType.SEQUENCE)
 	
 	private int program_id;
 	@NotBlank (message = "Program Name is mandatory")
+	@Column(unique = true)
 	private String program_name;
 	private String program_description;
 	private String program_status;

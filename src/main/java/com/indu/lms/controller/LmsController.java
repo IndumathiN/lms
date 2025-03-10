@@ -78,6 +78,10 @@ public class LmsController {
 
 	@PostMapping("/program")
 	public ResponseEntity<String> createProgram(@Valid @RequestBody TblLmsProgram newPrg) {
+		Optional<TblLmsProgram> output=programRep.findByProgramName(newPrg.getProgram_name());
+		 if (!output.isEmpty()) {
+			 return ResponseEntity.status(HttpStatus.CREATED).body("Program already exists!!");
+         }
 		programRep.save(newPrg);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Program created successfully");
 	}
@@ -147,13 +151,23 @@ public class LmsController {
 
 	@PostMapping("/batch")
 	public ResponseEntity<String> createBatch(@Valid @RequestBody TblLmsBatch newBatch) {
-
+		if(newBatch.getBatch_status()=="") {
+			newBatch.setBatch_status("Active");
+		}
 		Optional<TblLmsProgram> program = programRep.findById(newBatch.getBatch_program_id());
 		if (!program.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
 		}
-		batchRep.save(newBatch);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
+		
+		else {
+			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(newBatch.getBatch_name(),newBatch.getBatch_program_id());
+			if (batchnamePrg.isPresent()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Batch already exists!!");
+			}
+			batchRep.save(newBatch);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
+		}
+		
 	}
 
 	@PostMapping("/batchInfo")
@@ -175,13 +189,20 @@ public class LmsController {
 	// Update Customer Information
 	@PutMapping("/batches/{id}")
 	public ResponseEntity<String> updateBatch(@Valid @RequestBody TblLmsBatch updatedData, @PathVariable int id) {
+		
 		Optional<TblLmsProgram> program = programRep.findById(updatedData.getBatch_program_id());
 		if (!program.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
 		}
-
-		batchRep.save(updatedData);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Batch updated successfully");
+		else {
+			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(updatedData.getBatch_name(),updatedData.getBatch_program_id());
+			if (batchnamePrg.isPresent()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Batch already exists!!");
+			}
+			batchRep.save(updatedData);
+			return ResponseEntity.status(HttpStatus.CREATED).body("Batch updated successfully");
+		}
+		
 	}
 
 	// Delete Batch

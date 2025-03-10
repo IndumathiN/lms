@@ -21,6 +21,10 @@ public interface BatchRepository extends JpaRepository<TblLmsBatch, Integer> {
 	
 	@Query(value = "SELECT * FROM tbl_lms_batch  where batch_program_id = :programId", nativeQuery = true)
 	Optional<List<TblLmsBatch>> findByBatchProgramId(@Param("programId") int id);
+	
+	@Query(value = "SELECT * FROM tbl_lms_batch  where batch_name=:batchName and batch_program_id = :programId", nativeQuery = true)
+	Optional<TblLmsBatch> findByNamePrg(@Param("batchName") String prgName,@Param("programId")int id);
+
 
 	//Optional<List<TblLmsBatch>> findByBatchProgramId(int id);
 }
