@@ -19,13 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.indu.lms.entity.TblLmsBatch;
 import com.indu.lms.entity.TblLmsBatchInfo;
+import com.indu.lms.entity.TblLmsBatchInfo.TblLmsBatchInfoBuilder;
 import com.indu.lms.entity.TblLmsProgram;
 import com.indu.lms.entity.TblLmsProgramInfo;
+import com.indu.lms.exception.ErrorResponse;
 import com.indu.lms.exception.ResourceNotFoundException;
 import com.indu.lms.jpa.BatchInfoRepository;
 import com.indu.lms.jpa.BatchRepository;
 import com.indu.lms.jpa.ProgramInfoRepository;
 import com.indu.lms.jpa.ProgramRepository;
+import com.indu.lms.model.BatchModel;
+import com.indu.lms.model.ResponseModel;
 import com.indu.lms.model.TblLmsBatchMdl;
 import com.indu.lms.service.BatchService;
 
@@ -179,34 +183,25 @@ public class LmsController {
 	}
 
 	@PostMapping("/batchInfo")
-	public ResponseEntity<String> createBatchInfo(@Valid @RequestBody TblLmsBatchInfo newBatch) {
+	public ResponseEntity<ResponseModel> createBatchInfo(@Valid @RequestBody BatchModel newBatch) {
+		HttpStatus status=HttpStatus.OK;
+		ResponseModel response =batchService.saveBatch(newBatch);
 		
-		System.out.println(batchInfoRep.findAll());
-		Integer programId=newBatch.getProgram().getProgramId();
-		String batchName=newBatch.getBatchName();
-		
-		
-		
-		if(!programInfoRep.existsById(programId)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
+		if(response != null) {
+			if(!response.isSuccess() && response.getError() != null) {
+				status=response.getError().getStatus();
+			}
+			return ResponseEntity.status(status).body(response);
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.builder()
+					.isSuccess(false)
+					.error(ErrorResponse.builder()
+							.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.message("Error:Something went wrong")
+							.build())
+					.build());
 		}
-		//boolean batchExists=batchInfoRep.existsByBatch_nameAndBatchProgramId(batchName,programId);
-		Optional<TblLmsProgramInfo> program = programInfoRep.findById(programId);
-		boolean batchExists=batchInfoRep.existsByBatchNameAndProgram(batchName,program.get());
-		System.out.println("**************");
-		System.out.println(batchExists);
-		if (batchExists) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Batch already exists!!");
-		}
-//		if (!program.isPresent()) {
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
-//		}
-		if (!programInfoRep.existsById(programId)) {
-            throw new IllegalArgumentException("Invalid Category ID");
-        }
-		//newBatch.setProgram(program.get());
-		batchInfoRep.save(newBatch);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
+
 	}
 
 //	TblLmsBatch createBatch (@RequestBody TblLmsBatch newPrg) {

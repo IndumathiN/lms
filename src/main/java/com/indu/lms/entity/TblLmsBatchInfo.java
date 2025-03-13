@@ -24,6 +24,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.indu.lms.validator.ProgramExists;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +36,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Immutable
+@Builder
 @Table(name="tbl_lms_batch")
 public class TblLmsBatchInfo {
 	@Id

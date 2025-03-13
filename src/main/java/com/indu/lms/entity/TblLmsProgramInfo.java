@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 @Table(name="tbl_lms_program")
 public class TblLmsProgramInfo {
 	@Id
