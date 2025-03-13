@@ -31,9 +31,9 @@ import lombok.ToString;
 @Table(name="tbl_lms_program")
 public class TblLmsProgram {
 	@Id
-	@GeneratedValue (strategy = GenerationType.SEQUENCE)
+	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	
-	private int program_id;
+	private Integer program_id;
 	@NotBlank (message = "Program Name is mandatory")
 	@Column(unique = true)
 	private String program_name;

@@ -33,19 +33,28 @@ import lombok.ToString;
 public class TblLmsProgramInfo {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
-	private int program_id;
+	@Column(name="program_id")
+	private int programId;
+	
 	@NotBlank (message = "Program Name is mandatory")
-	private String program_name;
-	private String program_description;
-	private String program_status;
+	@Column(name="program_name")
+	private String programName;
+	
+	@Column(name="program_description")
+	private String programDescription;
+	
+	@Column(name="program_status")
+	private String programStatus;
 	
 	@UpdateTimestamp
 	@Column(name = "creation_time", updatable = false)
-	private LocalDateTime creation_time;
-	@UpdateTimestamp
-	private LocalDateTime last_mod_time;
+	private LocalDateTime creationTime;
 	
-	 @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	 private List<TblLmsBatchInfo> batchList;
+	@UpdateTimestamp
+	@Column(name = "last_mod_time")
+	private LocalDateTime lastModTime;
+	
+//	 @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	 private List<TblLmsBatchInfo> batchList;
 	 
 }

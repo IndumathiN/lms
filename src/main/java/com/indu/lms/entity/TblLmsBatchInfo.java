@@ -12,7 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -37,25 +39,40 @@ import lombok.ToString;
 @Table(name="tbl_lms_batch")
 public class TblLmsBatchInfo {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
-	private int batch_id;
+	@GeneratedValue (strategy = GenerationType.IDENTITY)
+	@Column(name="batch_id")
+	private int batchId;
+	
 	@NotBlank (message = "Batch Name is mandatory")
-	private String batch_name;
-	private String batch_description;
-	@NotBlank (message = "Batch Status is mandatory")
-	private String batch_status;
+	@Column(name="batch_name")
+	private String batchName;
+	
+	@Column(name="batch_description")
+	private String batchDescription;
+	
+	@Column(name="batch_status")
+	private String batchStatus;
 	
 	 @ManyToOne
 	 @JoinColumn(name = "batch_program_id")  // Creates Foreign Key in Student Table
 	 @NotNull (message = "Program Id is mandatory") 
+	// @Min(value = 1, message = "Program_id must be a positive integer")
 	//@ProgramExists(message = "Program not available in DB")
-	 private TblLmsProgram program;
+	 private TblLmsProgramInfo program;
 	 
-	
-	private int batch_no_of_classes;
+	 @Column(name="batch_no_of_classes")
+	private int batchNoOfClasses;
 	@UpdateTimestamp
 	@Column(name = "creation_time", updatable = false)
-	private LocalDateTime creation_time;
+	private LocalDateTime creationTime;
 	@UpdateTimestamp
-	private LocalDateTime last_mod_time;
+	@Column(name = "last_mod_time")
+	private LocalDateTime lastModTime;
+	
+	 @PrePersist
+	    public void setDefaultValues() {
+	        if (this.batchStatus == null || this.batchStatus == "") {
+	            this.batchStatus = "Active";  // Default value
+	        }
+	    }
 }

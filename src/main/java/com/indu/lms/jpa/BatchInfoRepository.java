@@ -10,9 +10,15 @@ import org.springframework.stereotype.Repository;
 
 
 import com.indu.lms.entity.TblLmsBatchInfo;
+import com.indu.lms.entity.TblLmsProgram;
+import com.indu.lms.entity.TblLmsProgramInfo;
 
 @Repository
 public interface BatchInfoRepository extends JpaRepository<TblLmsBatchInfo, Integer> {
 	@Query("SELECT b FROM TblLmsBatchInfo b WHERE b.program.id = :programId")
 	Optional<List<TblLmsBatchInfo>> findBatchByPrg(@Param("programId") int programId);
+	
+	//boolean existsByBatch_name(String batchName);
+
+	boolean existsByBatchNameAndProgram(String batch_name,TblLmsProgramInfo program);
 }
