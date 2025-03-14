@@ -29,9 +29,11 @@ import com.indu.lms.jpa.BatchRepository;
 import com.indu.lms.jpa.ProgramInfoRepository;
 import com.indu.lms.jpa.ProgramRepository;
 import com.indu.lms.model.BatchModel;
+import com.indu.lms.model.ProgramModel;
 import com.indu.lms.model.ResponseModel;
 import com.indu.lms.model.TblLmsBatchMdl;
 import com.indu.lms.service.BatchService;
+import com.indu.lms.service.ProgramService;
 
 @RestController
 @RequestMapping("/")
@@ -48,20 +50,134 @@ public class LmsController {
 
 	@Autowired
 	ProgramInfoRepository programInfoRep;
-	
+
 	@Autowired
 	BatchService batchService;
 
-	@GetMapping("/programs")
-	public Optional<List<TblLmsProgram>> all() {
-		Optional<List<TblLmsProgram>> output = Optional.ofNullable(programRep.findAll());
-		if (output.isPresent()) {
-			return output;
+	@Autowired
+	ProgramService programService;
+	
+	
+	
+	// *****************************************************************************
+	@PostMapping("/programInfo")
+	public ResponseModel createProgram(@Valid @RequestBody ProgramModel newPrg) {
+		return programService.saveProgram(newPrg);
+	}
+
+	@PutMapping("/programInfo/{id}")
+	public ResponseModel updateProgram(@Valid @RequestBody ProgramModel program, @PathVariable String id) {
+
+		program.setProgramId(id);
+		if (program.getProgramStatus() == "" || program.getProgramStatus() == null) {
+			program.setProgramStatus("Active");
+		}
+		return programService.saveProgram(program);
+
+	}
+
+	// Delete Program
+	@DeleteMapping("/delProgram/{id}")
+	public ResponseModel deleteProgram(@PathVariable int id) {
+		
+		return programService.deleteBatch(id);
+
+	}
+
+	@PostMapping("/batchInfo")
+	public ResponseEntity<ResponseModel> createBatchInfo(@Valid @RequestBody BatchModel newBatch) {
+		HttpStatus status = HttpStatus.OK;
+		ResponseModel response = batchService.saveBatch(newBatch);
+
+		if (response != null) {
+			if (!response.isSuccess() && response.getError() != null) {
+				status = response.getError().getStatus();
+			}
+			return ResponseEntity.status(status).body(response);
 		} else {
-			throw new ResourceNotFoundException("No Program!!");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(ResponseModel.builder().isSuccess(false).error(ErrorResponse.builder()
+							.status(HttpStatus.INTERNAL_SERVER_ERROR).message("Error:Something went wrong").build())
+							.build());
+		}
+
+	}
+
+	@PutMapping("/batchInfo/{id}")
+	public ResponseEntity<ResponseModel> updateBatchInfo(@Valid @RequestBody BatchModel updatedData,
+			@PathVariable String id) {
+
+		updatedData.setBatchId(id);
+		ResponseModel response = batchService.saveBatch(updatedData);
+		HttpStatus status = HttpStatus.OK;
+		if (response != null) {
+			if (!response.isSuccess() && response.getError() != null) {
+				status = response.getError().getStatus();
+			}
+			return ResponseEntity.status(status).body(response);
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(ResponseModel.builder().isSuccess(false).error(ErrorResponse.builder()
+							.status(HttpStatus.INTERNAL_SERVER_ERROR).message("Error:Something went wrong").build())
+							.build());
 		}
 	}
 
+	// Delete Batch
+	@DeleteMapping("/batchInfo/{id}")
+	public ResponseEntity<ResponseModel> deleteBatch(@PathVariable int id) {
+		// Optional<TblLmsBatch> batch = batchRep.findById(id);
+		ResponseModel response = batchService.deleteBatch(id);
+		HttpStatus status = HttpStatus.OK;
+		if (response != null) {
+			if (!response.isSuccess() && response.getError() != null) {
+				status = response.getError().getStatus();
+			}
+			return ResponseEntity.status(status).body(response);
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(ResponseModel.builder().isSuccess(false).error(ErrorResponse.builder()
+							.status(HttpStatus.INTERNAL_SERVER_ERROR).message("Error:Something went wrong").build())
+							.build());
+		}
+	}
+
+	@GetMapping("/batchInfo")
+	List<BatchModel> allBatch() {
+		List<BatchModel> output = batchService.getBatch();
+
+		if (!output.isEmpty()) {
+			return output;
+		} else {
+			throw new ResourceNotFoundException("Batch not yet created!!");
+		}
+
+	}
+
+	@GetMapping("/batchInfoById/{id}")
+	Optional<BatchModel> batchById(@PathVariable int id) {
+		Optional<BatchModel> output = batchService.getBatchById(id);
+
+		if (output.isPresent()) {
+			return output;
+		} else {
+			throw new ResourceNotFoundException("Batch ID doesn't exists");
+		}
+
+	}
+
+//		********************************************************************
+	
+	@GetMapping("/programs")
+	public List<ProgramModel> allProgram() {
+		List<ProgramModel> output = programService.getAllProgram();
+
+		if (!output.isEmpty()) {
+			return output;
+		} else {
+			throw new ResourceNotFoundException("Program not yet created!!");
+		}
+	}
 	@GetMapping("/programInfos")
 	Optional<List<TblLmsProgramInfo>> allInfo() {
 		Optional<List<TblLmsProgramInfo>> output = Optional.ofNullable(programInfoRep.findAll());
@@ -84,20 +200,6 @@ public class LmsController {
 
 	}
 
-	@PostMapping("/program")
-	public ResponseEntity<String> createProgram(@Valid @RequestBody TblLmsProgram newPrg) {
-		
-		Optional<TblLmsProgram> output=programRep.findByProgramName(newPrg.getProgram_name());
-		 if (!output.isEmpty()) {
-			 return ResponseEntity.status(HttpStatus.CREATED).body("Program already exists!!");
-         }
-		 if(newPrg.getProgram_status()=="") {
-				newPrg.setProgram_status("Active");
-			}
-		programRep.save(newPrg);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Program created successfully");
-	}
-
 	// Update prg Information
 	@PutMapping("/programs/{id}")
 	public ResponseEntity<String> updateProgram(@Valid @RequestBody TblLmsProgram updatedProgram,
@@ -110,45 +212,7 @@ public class LmsController {
 		return ResponseEntity.status(HttpStatus.CREATED).body("Program ID " + id + " updated successfully");
 	}
 
-	// Delete Program
-	@DeleteMapping("/programs/{id}")
-	public ResponseEntity<String> deleteProgram(@PathVariable int id) {
-		System.out.println("****************************************");
-		Optional<TblLmsProgram> program = programRep.findById(id);
-		System.out.println("stmt");
-		if (!program.isPresent()) {
-			System.out.println("if stmt");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program does not exist");
-		} else {
-			Optional<List<TblLmsBatch>> batches = batchRep.findByBatchProgramId(id);
-			System.out.println("else stmt");
-			System.out.println(batches);
-			if (!batches.isEmpty() && batches.get().size() > 0) {
-				
-				System.out.println("else if stmt");
-				// throw new RuntimeException("Cannot delete: Program is referenced in
-				// batches.");
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Cannot delete: Program is referenced in batches.");
-			}
-
-			programRep.deleteById(id);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Program deleted successfully");
-		}
-	}
-
 	// BATCH CRUD OPERATIONS
-
-	@GetMapping("/batches")
-	Optional<List<TblLmsBatch>> allBatch() {
-		Optional<List<TblLmsBatch>> output = Optional.ofNullable(batchRep.findAll());
-		if (output.isPresent()) {
-			return output;
-		} else {
-			throw new ResourceNotFoundException("Batch not yet created!!");
-		}
-		//return batchRep.findAll();
-	}
 
 	@GetMapping("/batches/{id}")
 	Optional<TblLmsBatch> findBatch(@PathVariable int id) {
@@ -158,83 +222,47 @@ public class LmsController {
 		} else {
 			throw new ResourceNotFoundException("Batch Id " + id + " doesn't exists!!");
 		}
-		//return batchRep.findById(id);
+		// return batchRep.findById(id);
 	}
 
 	@PostMapping("/batch")
 	public ResponseEntity<String> createBatch(@Valid @RequestBody TblLmsBatch newBatch) {
-		if(newBatch.getBatch_status()=="") {
+		if (newBatch.getBatch_status() == "") {
 			newBatch.setBatch_status("Active");
 		}
 		Optional<TblLmsProgram> program = programRep.findById(newBatch.getBatch_program_id());
 		if (!program.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
 		}
-		
+
 		else {
-			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(newBatch.getBatch_name(),newBatch.getBatch_program_id());
+			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(newBatch.getBatch_name(),
+					newBatch.getBatch_program_id());
 			if (batchnamePrg.isPresent()) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Batch already exists!!");
 			}
 			batchRep.save(newBatch);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Batch created successfully");
 		}
-		
-	}
-
-	@PostMapping("/batchInfo")
-	public ResponseEntity<ResponseModel> createBatchInfo(@Valid @RequestBody BatchModel newBatch) {
-		HttpStatus status=HttpStatus.OK;
-		ResponseModel response =batchService.saveBatch(newBatch);
-		
-		if(response != null) {
-			if(!response.isSuccess() && response.getError() != null) {
-				status=response.getError().getStatus();
-			}
-			return ResponseEntity.status(status).body(response);
-		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseModel.builder()
-					.isSuccess(false)
-					.error(ErrorResponse.builder()
-							.status(HttpStatus.INTERNAL_SERVER_ERROR)
-							.message("Error:Something went wrong")
-							.build())
-					.build());
-		}
 
 	}
 
-//	TblLmsBatch createBatch (@RequestBody TblLmsBatch newPrg) {
-//	 return batchRep.save(newPrg);
-//	 }
-	// Update Customer Information
 	@PutMapping("/batches/{id}")
 	public ResponseEntity<String> updateBatch(@Valid @RequestBody TblLmsBatch updatedData, @PathVariable int id) {
-		
+
 		Optional<TblLmsProgram> program = programRep.findById(updatedData.getBatch_program_id());
 		if (!program.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Program ID does not exist");
-		}
-		else {
-			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(updatedData.getBatch_name(),updatedData.getBatch_program_id());
+		} else {
+			Optional<TblLmsBatch> batchnamePrg = batchRep.findByNamePrg(updatedData.getBatch_name(),
+					updatedData.getBatch_program_id());
 			if (batchnamePrg.isPresent()) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Batch already exists!!");
 			}
 			batchRep.save(updatedData);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Batch updated successfully");
 		}
-		
-	}
 
-	// Delete Batch
-	@DeleteMapping("/batches/{id}")
-	public ResponseEntity<String> deleteBatch(@PathVariable int id) {
-		Optional<TblLmsBatch> batch = batchRep.findById(id);
-		if (!batch.isPresent()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Batch does not exist");
-		}
-		batchRep.deleteById(id);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Batch deleted successfully");
 	}
 
 	@GetMapping("/batches/withProgName")

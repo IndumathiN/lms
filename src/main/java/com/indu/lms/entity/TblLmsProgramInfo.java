@@ -56,7 +56,12 @@ public class TblLmsProgramInfo {
 	@Column(name = "last_mod_time")
 	private LocalDateTime lastModTime;
 	
-//	 @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//	 private List<TblLmsBatchInfo> batchList;
+	@PrePersist
+    public void setDefaultValues() {
+        if (this.programStatus == null || this.programStatus == "") {
+            this.programStatus = "Active";  // Default value
+        }
+	}
+
 	 
 }

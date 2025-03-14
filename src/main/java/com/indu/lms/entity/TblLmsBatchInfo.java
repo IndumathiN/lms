@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.indu.lms.validator.ProgramExists;
+//import com.indu.lms.validator.ProgramExists;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,6 +74,9 @@ public class TblLmsBatchInfo {
 	    public void setDefaultValues() {
 	        if (this.batchStatus == null || this.batchStatus == "") {
 	            this.batchStatus = "Active";  // Default value
+	        }
+	        if (this.batchNoOfClasses == 0) {
+	            this.batchNoOfClasses = 1;  // Default value
 	        }
 	    }
 }

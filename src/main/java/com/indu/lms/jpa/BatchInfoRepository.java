@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-
+import com.indu.lms.entity.TblLmsBatch;
 import com.indu.lms.entity.TblLmsBatchInfo;
 import com.indu.lms.entity.TblLmsProgram;
 import com.indu.lms.entity.TblLmsProgramInfo;
@@ -21,4 +21,6 @@ public interface BatchInfoRepository extends JpaRepository<TblLmsBatchInfo, Inte
 	//boolean existsByBatch_name(String batchName);
 
 	boolean existsByBatchNameAndProgram(String batch_name,TblLmsProgramInfo program);
+
+	Optional<List<TblLmsBatchInfo>> findByProgram(Optional<TblLmsProgramInfo> program);
 }

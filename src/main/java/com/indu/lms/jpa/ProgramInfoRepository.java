@@ -16,4 +16,6 @@ public interface ProgramInfoRepository extends JpaRepository<TblLmsProgramInfo, 
 //
 //	@Query("SELECT p FROM TblLmsProgramInfo p WHERE b.program.id = :programId")
 //	List<TblLmsBatchInfo> findBatchByPrg(@Param("programId") int programId);
+	boolean existsByProgramName(String programName);
+	TblLmsProgramInfo findByProgramNameAndProgramIdNot(String programName,int programId);
 }
